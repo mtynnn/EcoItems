@@ -72,7 +72,8 @@ object ItemAttributeListener : Listener {
             if (item.baseDamage != null) {
                 damageInst.addCompatibleModifier(
                     "Damage",
-                    item.baseDamage - player.inventory.itemInMainHand.type.baseDamage,
+                    // Set final value robustly even if the held item has hidden/default modifiers.
+                    item.baseDamage - damageInst.value,
                     offset
                 )
             }
@@ -80,7 +81,8 @@ object ItemAttributeListener : Listener {
             if (item.baseAttackSpeed != null) {
                 speedInst.addCompatibleModifier(
                     "Speed",
-                    item.baseAttackSpeed - player.inventory.itemInMainHand.type.baseAttackSpeed,
+                    // Prevent "stuck cooldown" by correcting from the current effective value.
+                    item.baseAttackSpeed - speedInst.value,
                     offset
                 )
             }
@@ -109,7 +111,7 @@ object ItemAttributeListener : Listener {
                 plugin.createNamespacedKey("${attributeType.lowercase()}_$offset"),
                 amount,
                 AttributeModifier.Operation.ADD_NUMBER,
-                EquipmentSlotGroup.ANY
+                EquipmentSlotGroup.MAINHAND
             )
         )
     }
